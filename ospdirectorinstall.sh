@@ -136,7 +136,7 @@ openstack-config --set undercloud.conf DEFAULT dhcp_start $DHCP_START
 openstack-config --set undercloud.conf DEFAULT dhcp_end $DHCP_END
 openstack-config --set undercloud.conf DEFAULT network_cidr $NETWORK_CIDR
 openstack-config --set undercloud.conf DEFAULT network_gateway $NETWORK_GATEWAY
-openstack-config --set undercloud.conf DEFAULT discovery_iprange $DISCOVERY_IP_START,$DISCOVER_IP_END
+openstack-config --set undercloud.conf DEFAULT discovery_iprange $DISCOVERY_IP_START,$DISCOVERY_IP_END
 openstack-config --set undercloud.conf DEFAULT discovery_runbench $DISCOVERY_RUNBENCH_BOOL
 openstack-config --set undercloud.conf DEFAULT undercloud_debug $UNDERCLOUD_DEBUG_BOOL
 openstack-config --set undercloud.conf DEFAULT image_path /home/stack/images
