@@ -84,7 +84,6 @@ echo $PASSWD | passwd stack --stdin
 echo "stack ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/stack
 chmod 0440 /etc/sudoers.d/stack
 
-
 echo -e "$MGMT_IP\t\t$FQDN\t$SHORT" >> /etc/hosts
 
 hostnamectl set-hostname $FQDN
@@ -102,7 +101,7 @@ echo "Setting Repo Priorities"
 yum-config-manager --enable rhel-7-server-openstack-7.0-rpms --setopt="rhel-7-server-openstack-7.0-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rpms --setopt="rhel-7-server-rpms.priority=1" && yum-config-manager --enable rhel-7-server-optional-rpms --setopt="rhel-7-server-optional-rpms.priority=1" && yum-config-manager --enable rhel-7-server-extras-rpms --setopt="rhel-7-server-extras-rpms.priority=1" && yum-config-manager --enable rhel-7-server-openstack-7.0-director-rpms --setopt="rhel-7-server-openstack-7.0-director-rpms.priority=1"
 
 echo "Updating system"
-yum install vim screen tree wget yum-plugin-priorities yum-utils facter ahc-tools openstack-utils git libguestfs-tools-c -y && update -y
+yum install vim screen tree wget yum-plugin-priorities yum-utils facter ahc-tools openstack-utils git libguestfs-tools-c -y && yum update -y
 
 mkdir -p /home/stack/{images,templates} 
 chown -R stack.stack /home/stack
@@ -113,8 +112,8 @@ sudo -H -u stack bash -c 'sudo cp /usr/share/instack-undercloud/undercloud.conf.
 chown -R stack.stack /home/stack/undercloud.conf
 cd /home/stack
 
-echo "Disabling eth0 for undercloud install"
-sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-eth0
+echo "Disabling $LOCAL_IFACE for undercloud install"
+sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
  
 #echo "Create Certs"
 #mkdir -p /etc/pki/instack-certs

@@ -1,7 +1,6 @@
 source ~/stackrc
 cd ~
 openstack overcloud deploy --templates \
--e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
 -e /home/stack/templates/environments/storage-environment.yaml \
 -e /home/stack/templates/network-environment.yaml \
 -e /home/stack/templates/limits.yaml \
@@ -16,3 +15,5 @@ openstack overcloud deploy --templates \
 --ntp-server time.nist.gov \
 --neutron-tunnel-types vxlan \
 --neutron-network-type vxlan \
+#--neutron-bridge-mappings datacentre:br-ex,tenant:br-tenant,storage:br-storage \
+#--neutron-network-vlan-ranges datacentre:1:1000,tenant:1:1000,storage:1:1000 \
