@@ -95,13 +95,13 @@ echo "Registering System"
 subscription-manager register --username=$RHNUSER --password=$RHNPASSWORD
 subscription-manager attach --pool=$POOLID
 subscription-manager repos --disable='*'
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-openstack-7.0-rpms --enable=rhel-7-server-openstack-7.0-director-rpms
+subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-7-server-satellite-tools-6.1-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-8-rpms --enable=rhel-7-server-openstack-8-director-rpms --enable=rhel-7-server-rhceph-1.3-osd-rpms --enable=rhel-7-server-rhceph-1.3-mon-rpms
 
 echo "Setting Repo Priorities"
-yum-config-manager --enable rhel-7-server-openstack-7.0-rpms --setopt="rhel-7-server-openstack-7.0-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rpms --setopt="rhel-7-server-rpms.priority=1" && yum-config-manager --enable rhel-7-server-optional-rpms --setopt="rhel-7-server-optional-rpms.priority=1" && yum-config-manager --enable rhel-7-server-extras-rpms --setopt="rhel-7-server-extras-rpms.priority=1" && yum-config-manager --enable rhel-7-server-openstack-7.0-director-rpms --setopt="rhel-7-server-openstack-7.0-director-rpms.priority=1"
+yum-config-manager --enable rhel-7-server-openstack-8-rpms --setopt="rhel-7-server-openstack-8-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rpms --setopt="rhel-7-server-rpms.priority=1" && yum-config-manager --enable rhel-7-server-optional-rpms --setopt="rhel-7-server-optional-rpms.priority=1" && yum-config-manager --enable rhel-7-server-extras-rpms --setopt="rhel-7-server-extras-rpms.priority=1" && yum-config-manager --enable rhel-7-server-openstack-8-director-rpms --setopt="rhel-7-server-openstack-8-director-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rh-common-rpms --setopt="rhel-7-server-rh-common-rpms.priority=1" && yum-config-manager --enable rhel-7-server-satellite-tools-6.1-rpms --setopt="rhel-7-server-satellite-tools-6.1-rpms.priority=1" && yum-config-manager --enable rhel-ha-for-rhel-7-server-rpms --setopt="rhel-ha-for-rhel-7-server-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rhceph-1.3-osd-rpms --setopt="rhel-7-server-rhceph-1.3-osd-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rhceph-1.3-mon-rpms --setopt="rhel-7-server-rhceph-1.3-mon-rpms.priority=1"
 
 echo "Updating system"
-yum install vim screen tree wget yum-plugin-priorities yum-utils facter ahc-tools openstack-utils git libguestfs-tools-c -y && yum update -y
+yum install vim screen tree wget yum-plugin-priorities yum-utils facter ahc-tools openstack-utils git libguestfs-tools-c ansible -y && yum update -y
 
 mkdir -p /home/stack/{images,templates} 
 chown -R stack.stack /home/stack
