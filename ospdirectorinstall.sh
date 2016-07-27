@@ -125,6 +125,11 @@ cd /home/stack/images
 for tarfile in *.tar; do tar -xf $tarfile; done
 chown -R stack.stack /home/stack/images
 
+#For time being downgrade TripleO client for this bug:
+#https://bugzilla.redhat.com/show_bug.cgi?id=1347063
+#KB Article: https://access.redhat.com/solutions/2446961
+yum downgrade -y python-tripleoclient-0.3.4-4.el7ost.noarch
+
 echo "Disabling $LOCAL_IFACE for undercloud install"
 sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
  
