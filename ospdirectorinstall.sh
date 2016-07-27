@@ -117,6 +117,14 @@ sudo -H -u stack bash -c 'sudo cp /usr/share/instack-undercloud/undercloud.conf.
 chown -R stack.stack /home/stack/undercloud.conf
 cd /home/stack
 
+echo "Installing overcloud images"
+sudo yum install -y rhosp-director-images rhosp-director-images-ipa
+sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/overcloud-full-latest-8.0.tar ~/images/'
+sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/ironic-python-agent-latest-8.0.tar ~/images/'
+cd /home/stack/images
+for tarfile in *.tar; do tar -xf $tarfile; done
+chown -R stack.stack /home/stack/images
+
 echo "Disabling $LOCAL_IFACE for undercloud install"
 sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
  
