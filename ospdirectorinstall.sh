@@ -111,8 +111,8 @@ yum install ansible -y
 mkdir -p /home/stack/{images,templates} 
 chown -R stack.stack /home/stack
 
-echo "Installing  python-rdomanager-oscplugin"
-sudo -H -u stack bash -c 'sudo yum install -y python-rdomanager-oscplugin' 
+echo "Installing  python-tripleoclient"
+sudo -H -u stack bash -c 'sudo yum install -y python-tripleoclient' 
 sudo -H -u stack bash -c 'sudo cp /usr/share/instack-undercloud/undercloud.conf.sample ~/undercloud.conf' 
 chown -R stack.stack /home/stack/undercloud.conf
 cd /home/stack
