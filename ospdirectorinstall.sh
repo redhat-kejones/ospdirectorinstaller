@@ -47,17 +47,25 @@ NETWORK_CIDR=172.16.0.0/24
 NETWORK_GATEWAY=172.16.0.1
 # Network interface on which discovery dnsmasq will listen.  If in
 # doubt, use the default value. (string value)
-DISCOVERY_INTERFACE=br-ctlplane
+INSPECTION_INTERFACE=br-ctlplane
 # Temporary IP range that will be given to nodes during the discovery
 # process.  Should not overlap with the range defined by dhcp_start
 # and dhcp_end, but should be in the same network. (string value)
-DISCOVERY_IP_START=172.16.0.200
-DISCOVERY_IP_END=172.16.0.220
+INSPECTION_IP_START=172.16.0.200
+INSPECTION_IP_END=172.16.0.220
 # Whether to run benchmarks when discovering nodes. (boolean value)
-DISCOVERY_RUNBENCH_BOOL=false
+INSPECTION_RUNBENCH_BOOL=false
 # Whether to enable the debug log level for Undercloud OpenStack
 # services. (boolean value)
 UNDERCLOUD_DEBUG_BOOL=false
+# Defines whether to install the validation tools. The default is set
+# to false, but you can can enable using true. 
+ENABLE_TEMPEST=false
+# Defines whether to use iPXE or standard PXE. The default is true,
+# which enables iPXE. Set to false to set to standard PXE.
+IPXE_DEPLOY=true
+# Defines whether to store events in Ceilometer on the Undercloud.
+STORE_EVENTS=false
 ############################################################################
 
 
@@ -95,13 +103,10 @@ echo "Registering System"
 subscription-manager register --username=$RHNUSER --password=$RHNPASSWORD
 subscription-manager attach --pool=$POOLID
 subscription-manager repos --disable='*'
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-7-server-satellite-tools-6.1-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-8-rpms --enable=rhel-7-server-openstack-8-director-rpms --enable=rhel-7-server-rhceph-1.3-osd-rpms --enable=rhel-7-server-rhceph-1.3-mon-rpms
-
-echo "Setting Repo Priorities"
-yum-config-manager --enable rhel-7-server-openstack-8-rpms --setopt="rhel-7-server-openstack-8-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rpms --setopt="rhel-7-server-rpms.priority=1" && yum-config-manager --enable rhel-7-server-optional-rpms --setopt="rhel-7-server-optional-rpms.priority=1" && yum-config-manager --enable rhel-7-server-extras-rpms --setopt="rhel-7-server-extras-rpms.priority=1" && yum-config-manager --enable rhel-7-server-openstack-8-director-rpms --setopt="rhel-7-server-openstack-8-director-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rh-common-rpms --setopt="rhel-7-server-rh-common-rpms.priority=1" && yum-config-manager --enable rhel-7-server-satellite-tools-6.1-rpms --setopt="rhel-7-server-satellite-tools-6.1-rpms.priority=1" && yum-config-manager --enable rhel-ha-for-rhel-7-server-rpms --setopt="rhel-ha-for-rhel-7-server-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rhceph-1.3-osd-rpms --setopt="rhel-7-server-rhceph-1.3-osd-rpms.priority=1" && yum-config-manager --enable rhel-7-server-rhceph-1.3-mon-rpms --setopt="rhel-7-server-rhceph-1.3-mon-rpms.priority=1"
+subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-7-server-satellite-tools-6.1-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-9-rpms --enable=rhel-7-server-openstack-9-director-rpms --enable=rhel-7-server-rhceph-1.3-osd-rpms --enable=rhel-7-server-rhceph-1.3-mon-rpms
 
 echo "Updating system"
-yum install vim screen tree wget yum-plugin-priorities yum-utils facter openstack-utils git libguestfs-tools-c -y && yum update -y
+yum install vim screen tree wget yum-utils facter openstack-utils git libguestfs-tools-c -y && yum update -y
 
 echo "Installing ansible"
 wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -119,8 +124,8 @@ cd /home/stack
 
 echo "Installing overcloud images"
 sudo yum install -y rhosp-director-images rhosp-director-images-ipa
-sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/overcloud-full-latest-8.0.tar ~/images/'
-sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/ironic-python-agent-latest-8.0.tar ~/images/'
+sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/overcloud-full-latest-9.0.tar ~/images/'
+sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/ironic-python-agent-latest-9.0.tar ~/images/'
 cd /home/stack/images
 for tarfile in *.tar; do tar -xf $tarfile; done
 chown -R stack.stack /home/stack/images
@@ -129,7 +134,7 @@ echo "Downgrading TripleO packages for Bug# 1347063"
 #For time being downgrade TripleO client for this bug:
 #https://bugzilla.redhat.com/show_bug.cgi?id=1347063
 #KB Article: https://access.redhat.com/solutions/2446961
-yum downgrade -y python-tripleoclient-0.3.4-4.el7ost.noarch openstack-tripleo-heat-templates-kilo-0.8.14-11.el7ost.noarch openstack-tripleo-heat-templates-0.8.14-11.el7ost.noarch
+#yum downgrade -y python-tripleoclient-0.3.4-4.el7ost.noarch openstack-tripleo-heat-templates-kilo-0.8.14-11.el7ost.noarch openstack-tripleo-heat-templates-0.8.14-11.el7ost.noarch
 
 echo "Disabling $LOCAL_IFACE for undercloud install"
 sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
@@ -154,11 +159,14 @@ openstack-config --set undercloud.conf DEFAULT dhcp_start $DHCP_START
 openstack-config --set undercloud.conf DEFAULT dhcp_end $DHCP_END
 openstack-config --set undercloud.conf DEFAULT network_cidr $NETWORK_CIDR
 openstack-config --set undercloud.conf DEFAULT network_gateway $NETWORK_GATEWAY
-openstack-config --set undercloud.conf DEFAULT discovery_iprange $DISCOVERY_IP_START,$DISCOVERY_IP_END
-openstack-config --set undercloud.conf DEFAULT discovery_runbench $DISCOVERY_RUNBENCH_BOOL
+openstack-config --set undercloud.conf DEFAULT inspection_iprange $INSPECTION_IP_START,$INSPECTION_IP_END
+openstack-config --set undercloud.conf DEFAULT inspection_runbench $INSPECTION_RUNBENCH_BOOL
 openstack-config --set undercloud.conf DEFAULT undercloud_debug $UNDERCLOUD_DEBUG_BOOL
 openstack-config --set undercloud.conf DEFAULT image_path /home/stack/images
-openstack-config --set undercloud.conf DEFAULT discovery_interface $DISCOVERY_INTERFACE
+openstack-config --set undercloud.conf DEFAULT inspection_interface $INSPECTION_INTERFACE
+openstack-config --set undercloud.conf DEFAULT enable_tempest $ENABLE_TEMPEST
+openstack-config --set undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
+openstack-config --set undercloud.conf DEFAULT store_events $STORE_EVENTS
 
 echo "Launch the following command as user STACK!"
 echo "su - stack"
