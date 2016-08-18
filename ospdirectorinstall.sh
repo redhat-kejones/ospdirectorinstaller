@@ -150,23 +150,23 @@ sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
 #restorecon -Rv /etc/pki/instack-certs 
 
 echo "Modifying undercloud.conf"
-openstack-config --set undercloud.conf DEFAULT local_ip $LOCAL_IP
-openstack-config --set undercloud.conf DEFAULT undercloud_public_vip  $UNDERCLOUD_PUBLIC_VIP
-openstack-config --set undercloud.conf DEFAULT undercloud_admin_vip $UNDERCLOUD_ADMIN_VIP
-openstack-config --set undercloud.conf DEFAULT local_interface $LOCAL_IFACE
-openstack-config --set undercloud.conf DEFAULT masquerade_network $MASQUERADE_NETWORK
-openstack-config --set undercloud.conf DEFAULT dhcp_start $DHCP_START
-openstack-config --set undercloud.conf DEFAULT dhcp_end $DHCP_END
-openstack-config --set undercloud.conf DEFAULT network_cidr $NETWORK_CIDR
-openstack-config --set undercloud.conf DEFAULT network_gateway $NETWORK_GATEWAY
-openstack-config --set undercloud.conf DEFAULT inspection_iprange $INSPECTION_IP_START,$INSPECTION_IP_END
-openstack-config --set undercloud.conf DEFAULT inspection_runbench $INSPECTION_RUNBENCH_BOOL
-openstack-config --set undercloud.conf DEFAULT undercloud_debug $UNDERCLOUD_DEBUG_BOOL
-openstack-config --set undercloud.conf DEFAULT image_path /home/stack/images
-openstack-config --set undercloud.conf DEFAULT inspection_interface $INSPECTION_INTERFACE
-openstack-config --set undercloud.conf DEFAULT enable_tempest $ENABLE_TEMPEST
-openstack-config --set undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
-openstack-config --set undercloud.conf DEFAULT store_events $STORE_EVENTS
+openstack-config --set /home/stack/undercloud.conf DEFAULT local_ip $LOCAL_IP
+openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_public_vip  $UNDERCLOUD_PUBLIC_VIP
+openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_admin_vip $UNDERCLOUD_ADMIN_VIP
+openstack-config --set /home/stack/undercloud.conf DEFAULT local_interface $LOCAL_IFACE
+openstack-config --set /home/stack/undercloud.conf DEFAULT masquerade_network $MASQUERADE_NETWORK
+openstack-config --set /home/stack/undercloud.conf DEFAULT dhcp_start $DHCP_START
+openstack-config --set /home/stack/undercloud.conf DEFAULT dhcp_end $DHCP_END
+openstack-config --set /home/stack/undercloud.conf DEFAULT network_cidr $NETWORK_CIDR
+openstack-config --set /home/stack/undercloud.conf DEFAULT network_gateway $NETWORK_GATEWAY
+openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_iprange $INSPECTION_IP_START,$INSPECTION_IP_END
+openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_runbench $INSPECTION_RUNBENCH_BOOL
+openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_debug $UNDERCLOUD_DEBUG_BOOL
+openstack-config --set /home/stack/undercloud.conf DEFAULT image_path /home/stack/images
+openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_interface $INSPECTION_INTERFACE
+openstack-config --set /home/stack/undercloud.conf DEFAULT enable_tempest $ENABLE_TEMPEST
+openstack-config --set /home/stack/undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
+openstack-config --set /home/stack/undercloud.conf DEFAULT store_events $STORE_EVENTS
 
 echo "Launch the following command as user STACK!"
 echo "su - stack"
