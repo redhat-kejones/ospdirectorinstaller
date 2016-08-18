@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 ######## RHN CONFIG ######################################################
 RHNUSER=YOURUSER
 RHNPASSWORD=YOURPASSWORD
