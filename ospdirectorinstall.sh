@@ -10,6 +10,7 @@ SHORT=undercloud
 ######## Stack User Password #############################################
 PASSWD=redhat
 ######## undercloud.conf #################################################
+UNDERCLOUD_HOSTNAME=$FQDN
 # IP information for the interface on the Undercloud that will be        
 # handling the PXE boots and DHCP for Overcloud instances.  The IP       
 # portion of the value will be assigned to the network interface         
@@ -61,11 +62,32 @@ UNDERCLOUD_DEBUG_BOOL=false
 # Defines whether to install the validation tools. The default is set
 # to false, but you can can enable using true. 
 ENABLE_TEMPEST=false
+# Defines whether to install the OpenStack Workflow Service (mistral)
+# in the undercloud.
+ENABLE_MISTRAL=true
+# Defines whether to install the OpenStack Messaging Service (zaqar)
+# in the undercloud.
+ENABLE_ZAQAR=true
+# Defines whether to install OpenStack Telemetry (ceilometer, aodh)
+# services in the undercloud.
+ENABLE_TELEMETRY=true
+# Defines Whether to install the director’s web UI. This allows
+# you to perform overcloud planning and deployments through a
+# graphical web interface. For more information, see Chapter 6,
+# Configuring Basic Overcloud Requirements with the Web UI. Note
+# that the UI is only available with SSL/TLS enabled using either
+# the undercloud_service_certificate or generate_service_certificate.
+ENABLE_UI=true
+# Defines whether to install the requirements to run validations.
+ENABLE_VALIDATIONS=true
 # Defines whether to use iPXE or standard PXE. The default is true,
 # which enables iPXE. Set to false to set to standard PXE.
 IPXE_DEPLOY=true
 # Defines whether to store events in Ceilometer on the Undercloud.
 STORE_EVENTS=false
+# Defines whether to wipe the hard drive of overcloud nodes between
+# deployments and after the introspection.
+CLEAN_NODES=false
 ############################################################################
 
 
@@ -103,15 +125,10 @@ echo "Registering System"
 subscription-manager register --username=$RHNUSER --password=$RHNPASSWORD
 subscription-manager attach --pool=$POOLID
 subscription-manager repos --disable='*'
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-7-server-satellite-tools-6.1-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-9-rpms --enable=rhel-7-server-openstack-9-director-rpms --enable=rhel-7-server-rhceph-1.3-osd-rpms --enable=rhel-7-server-rhceph-1.3-mon-rpms
+subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-10-rpms --enable=rhel-7-server-satellite-tools-6.2-rpms --enable=rhel-7-server-rhceph-2-osd-rpms --enable=rhel-7-server-rhceph-2-mon-rpms
 
 echo "Updating system"
 yum install vim screen tree wget yum-utils facter openstack-utils git libguestfs-tools-c -y && yum update -y
-
-echo "Installing ansible"
-wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install epel-release-latest-7.noarch.rpm -y
-yum install ansible -y
 
 mkdir -p /home/stack/{images,templates} 
 chown -R stack.stack /home/stack
@@ -124,17 +141,11 @@ cd /home/stack
 
 echo "Installing overcloud images"
 sudo yum install -y rhosp-director-images rhosp-director-images-ipa
-sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/overcloud-full-latest-9.0.tar ~/images/'
-sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/ironic-python-agent-latest-9.0.tar ~/images/'
+sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/overcloud-full-latest-10.0.tar ~/images/'
+sudo -H -u stack bash -c 'sudo cp /usr/share/rhosp-director-images/ironic-python-agent-latest-10.0.tar ~/images/'
 cd /home/stack/images
 for tarfile in *.tar; do tar -xf $tarfile; done
 chown -R stack.stack /home/stack/images
-
-echo "Downgrading TripleO packages for Bug# 1347063"
-#For time being downgrade TripleO client for this bug:
-#https://bugzilla.redhat.com/show_bug.cgi?id=1347063
-#KB Article: https://access.redhat.com/solutions/2446961
-#yum downgrade -y python-tripleoclient-0.3.4-4.el7ost.noarch openstack-tripleo-heat-templates-kilo-0.8.14-11.el7ost.noarch openstack-tripleo-heat-templates-0.8.14-11.el7ost.noarch
 
 echo "Disabling $LOCAL_IFACE for undercloud install"
 sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
@@ -150,6 +161,7 @@ sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
 #restorecon -Rv /etc/pki/instack-certs 
 
 echo "Modifying undercloud.conf"
+openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_hostname $UNDERCLOUD_HOSTNAME
 openstack-config --set /home/stack/undercloud.conf DEFAULT local_ip $LOCAL_IP
 openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_public_vip  $UNDERCLOUD_PUBLIC_VIP
 openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_admin_vip $UNDERCLOUD_ADMIN_VIP
@@ -165,11 +177,17 @@ openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_debug $UND
 openstack-config --set /home/stack/undercloud.conf DEFAULT image_path /home/stack/images
 openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_interface $INSPECTION_INTERFACE
 openstack-config --set /home/stack/undercloud.conf DEFAULT enable_tempest $ENABLE_TEMPEST
+openstack-config --set /home/stack/undercloud.conf DEFAULT enable_mistral $ENABLE_MISTRAL
+openstack-config --set /home/stack/undercloud.conf DEFAULT enable_zaqar $ENABLE_ZAQAR
+openstack-config --set /home/stack/undercloud.conf DEFAULT enable_telemetry $ENABLE_TELEMETRY
+openstack-config --set /home/stack/undercloud.conf DEFAULT enable_ui $ENABLE_UI
+openstack-config --set /home/stack/undercloud.conf DEFAULT enable_validations $ENABLE_VALIDATIONS
 openstack-config --set /home/stack/undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
 openstack-config --set /home/stack/undercloud.conf DEFAULT store_events $STORE_EVENTS
+openstack-config --set /home/stack/undercloud.conf DEFAULT clean_nodes $CLEAN_NODES
 
 echo "Launch the following command as user STACK!"
 echo "su - stack"
 echo "screen"
-echo "export HOSTNAME=$FQDN && openstack undercloud install"
+echo "openstack undercloud install"
 echo "CTRL a d"
