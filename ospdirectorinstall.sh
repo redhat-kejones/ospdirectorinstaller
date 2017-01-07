@@ -125,7 +125,7 @@ echo "Registering System"
 subscription-manager register --username=$RHNUSER --password=$RHNPASSWORD
 subscription-manager attach --pool=$POOLID
 subscription-manager repos --disable='*'
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-10-rpms --enable=rhel-7-server-satellite-tools-6.2-rpms --enable=rhel-7-server-rhceph-2-osd-rpms --enable=rhel-7-server-rhceph-2-mon-rpms
+subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-10-rpms --enable=rhel-7-server-openstack-10-devtools-rpms --enable=rhel-7-server-satellite-tools-6.2-rpms --enable=rhel-7-server-rhceph-2-osd-rpms --enable=rhel-7-server-rhceph-2-mon-rpms
 
 echo "Updating system"
 yum install vim screen tree wget yum-utils facter openstack-utils git libguestfs-tools-c -y && yum update -y
