@@ -20,11 +20,11 @@ keypairPubkey=""
 source ~/overcloudrc
 
 #Create the operators tenant and operator user defined above
-keystone tenant-create --name $tenant --description "Project intended for shared resources and testing by Operators" --enabled true
-keystone user-create --name $user --tenant-id $tenant --pass $password --email $email --enabled true
+openstack project create $tenant --description "Project intended for shared resources and testing by Operators" --enable
+openstack user create $user --project $tenant --password $password --email $email --enable
 
-#Grand the admin role to the operator admin
-keystone user-role-add --user $user --tenant $tenant --role admin
+#Grant the admin role to the operator admin
+openstack role add admin --user $user --project $tenant
 
 #create an rc file for the new operator user
 cp overcloudrc ${user}rc
@@ -42,7 +42,7 @@ nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
 #Create a temp public key file
 echo $keypairPubkey > /tmp/${keypairName}.pub
 #Import the public key for the operator user
-nova keypair-add --pub_key /tmp/${keypairName}.pub $keypairName
+nova keypair-add --pub-key /tmp/${keypairName}.pub $keypairName
 
 #Download the cirros test image
 curl -o /tmp/cirros.qcow2 http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
