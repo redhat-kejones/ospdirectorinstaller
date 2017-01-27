@@ -5,16 +5,16 @@ user=operator
 password=redhat
 email=operator@redhat.com
 tenant=operators
-externalNetwork=external
+externalNetwork=public
 externalCidr='10.16.0.0/24'
 externalGateway='10.16.0.1'
 externalDns='10.16.0.1'
 externalFipStart='10.16.0.100'
 externalFipEnd='10.16.0.250'
-tenantNetwork=tenant
+tenantNetwork=private
 tenantCidr='192.168.1.0/24'
 keypairName=operator
-keypairPubkey=""
+keypairPubkey="Enter Public Key Here"
 
 #Start as the admin user
 source ~/overcloudrc
@@ -49,6 +49,9 @@ curl -o /tmp/cirros.qcow2 http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x8
 #Upload the cirros test image to glance and share publicly
 glance image-create --name cirros --disk-format qcow2 \
   --container-format bare --is-public true --file /tmp/cirros.qcow2
+
+#Create a base flavor for use later
+openstack flavor create --id 1 --ram 512 --disk 1 --vcpus 1 --public m1.tiny
 
 #Create shared external network via flat provider type
 #neutron net-create $externalNetwork --provider:network_type flat --provider:physical_network datacentre --shared --router:external 
