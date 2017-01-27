@@ -54,9 +54,9 @@ glance image-create --name cirros --disk-format qcow2 \
 openstack flavor create --id 1 --ram 512 --disk 1 --vcpus 1 --public m1.tiny
 
 #Create shared external network via flat provider type
-#neutron net-create $externalNetwork --provider:network_type flat --provider:physical_network datacentre --shared --router:external 
+neutron net-create $externalNetwork --provider:network_type flat --provider:physical_network datacentre --shared --router:external 
 #Create external network via vxlan
-neutron net-create $externalNetwork --shared --router:external 
+#neutron net-create $externalNetwork --shared --router:external 
 
 #Create external subnet
 neutron subnet-create $externalNetwork $externalCidr --name ${externalNetwork}-sub --disable-dhcp --allocation-pool=start=$externalFipStart,end=$externalFipEnd --gateway=$externalGateway --dns-nameserver $externalDns
