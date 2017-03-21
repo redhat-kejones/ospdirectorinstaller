@@ -19,10 +19,10 @@ UNDERCLOUD_HOSTNAME=$FQDN
 LOCAL_IP=172.16.0.5/24
 # Virtual IP address to use for the public endpoints of Undercloud      
 # services. (string value)
-UNDERCLOUD_PUBLIC_VIP=172.16.0.10
+UNDERCLOUD_PUBLIC_VIP=10.16.0.5
 # Virtual IP address to use for the admin endpoints of Undercloud
 # services. (string value)
-UNDERCLOUD_ADMIN_VIP=172.16.0.11
+UNDERCLOUD_ADMIN_VIP=172.16.0.6
 # Certificate file to use for OpenStack service SSL connections.
 # (string value)
 GENERATE_SERVICE_CERTIFICATE=false
