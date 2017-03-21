@@ -4,7 +4,7 @@ RHNUSER=YOURUSER
 RHNPASSWORD=YOURPASSWORD
 POOLID=YOURPOOLID
 ######## HOSTNAME CONFIG #################################################
-MGMT_IP=172.16.0.5
+MGMT_IP=10.16.0.5
 FQDN=undercloud.example.com
 SHORT=undercloud
 ######## Stack User Password #############################################
@@ -25,7 +25,7 @@ UNDERCLOUD_PUBLIC_VIP=172.16.0.10
 UNDERCLOUD_ADMIN_VIP=172.16.0.11
 # Certificate file to use for OpenStack service SSL connections.
 # (string value)
-GENERATE_SERVICE_CERTIFICATE=true
+GENERATE_SERVICE_CERTIFICATE=false
 #UNDERCLOUD_SERVICE_CERTIFICATE=undercloud.pem --> This is not working yet
 # Network interface on the Undercloud that will be handling the PXE
 # boots and DHCP for Overcloud instances. (string value)
