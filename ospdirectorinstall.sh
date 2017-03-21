@@ -25,6 +25,7 @@ UNDERCLOUD_PUBLIC_VIP=172.16.0.10
 UNDERCLOUD_ADMIN_VIP=172.16.0.11
 # Certificate file to use for OpenStack service SSL connections.
 # (string value)
+GENERATE_SERVICE_CERTIFICATE=true
 #UNDERCLOUD_SERVICE_CERTIFICATE=undercloud.pem --> This is not working yet
 # Network interface on the Undercloud that will be handling the PXE
 # boots and DHCP for Overcloud instances. (string value)
@@ -128,7 +129,7 @@ subscription-manager repos --disable='*'
 subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-extras-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-ha-for-rhel-7-server-rpms --enable=rhel-7-server-openstack-10-rpms --enable=rhel-7-server-openstack-10-devtools-rpms --enable=rhel-7-server-satellite-tools-6.2-rpms --enable=rhel-7-server-rhceph-2-osd-rpms --enable=rhel-7-server-rhceph-2-mon-rpms
 
 echo "Updating system"
-yum install vim screen tree wget yum-utils facter openstack-utils git libguestfs-tools-c -y && yum update -y
+yum install vim screen tree wget yum-utils facter crudini git libguestfs-tools-c -y && yum update -y
 
 mkdir -p /home/stack/{images,templates} 
 chown -R stack.stack /home/stack
@@ -161,30 +162,31 @@ sed -i s/ONBOOT=.*/ONBOOT=no/g /etc/sysconfig/network-scripts/ifcfg-$LOCAL_IFACE
 #restorecon -Rv /etc/pki/instack-certs 
 
 echo "Modifying undercloud.conf"
-openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_hostname $UNDERCLOUD_HOSTNAME
-openstack-config --set /home/stack/undercloud.conf DEFAULT local_ip $LOCAL_IP
-openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_public_vip  $UNDERCLOUD_PUBLIC_VIP
-openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_admin_vip $UNDERCLOUD_ADMIN_VIP
-openstack-config --set /home/stack/undercloud.conf DEFAULT local_interface $LOCAL_IFACE
-openstack-config --set /home/stack/undercloud.conf DEFAULT masquerade_network $MASQUERADE_NETWORK
-openstack-config --set /home/stack/undercloud.conf DEFAULT dhcp_start $DHCP_START
-openstack-config --set /home/stack/undercloud.conf DEFAULT dhcp_end $DHCP_END
-openstack-config --set /home/stack/undercloud.conf DEFAULT network_cidr $NETWORK_CIDR
-openstack-config --set /home/stack/undercloud.conf DEFAULT network_gateway $NETWORK_GATEWAY
-openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_iprange $INSPECTION_IP_START,$INSPECTION_IP_END
-openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_runbench $INSPECTION_RUNBENCH_BOOL
-openstack-config --set /home/stack/undercloud.conf DEFAULT undercloud_debug $UNDERCLOUD_DEBUG_BOOL
-openstack-config --set /home/stack/undercloud.conf DEFAULT image_path /home/stack/images
-openstack-config --set /home/stack/undercloud.conf DEFAULT inspection_interface $INSPECTION_INTERFACE
-openstack-config --set /home/stack/undercloud.conf DEFAULT enable_tempest $ENABLE_TEMPEST
-openstack-config --set /home/stack/undercloud.conf DEFAULT enable_mistral $ENABLE_MISTRAL
-openstack-config --set /home/stack/undercloud.conf DEFAULT enable_zaqar $ENABLE_ZAQAR
-openstack-config --set /home/stack/undercloud.conf DEFAULT enable_telemetry $ENABLE_TELEMETRY
-openstack-config --set /home/stack/undercloud.conf DEFAULT enable_ui $ENABLE_UI
-openstack-config --set /home/stack/undercloud.conf DEFAULT enable_validations $ENABLE_VALIDATIONS
-openstack-config --set /home/stack/undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
-openstack-config --set /home/stack/undercloud.conf DEFAULT store_events $STORE_EVENTS
-openstack-config --set /home/stack/undercloud.conf DEFAULT clean_nodes $CLEAN_NODES
+crudini --set /home/stack/undercloud.conf DEFAULT undercloud_hostname $UNDERCLOUD_HOSTNAME
+crudini --set /home/stack/undercloud.conf DEFAULT local_ip $LOCAL_IP
+crudini --set /home/stack/undercloud.conf DEFAULT undercloud_public_vip  $UNDERCLOUD_PUBLIC_VIP
+crudini --set /home/stack/undercloud.conf DEFAULT undercloud_admin_vip $UNDERCLOUD_ADMIN_VIP
+crudini --set /home/stack/undercloud.conf DEFAULT generate_service_certificate $GENERATE_SERVICE_CERTIFICATE
+crudini --set /home/stack/undercloud.conf DEFAULT local_interface $LOCAL_IFACE
+crudini --set /home/stack/undercloud.conf DEFAULT masquerade_network $MASQUERADE_NETWORK
+crudini --set /home/stack/undercloud.conf DEFAULT dhcp_start $DHCP_START
+crudini --set /home/stack/undercloud.conf DEFAULT dhcp_end $DHCP_END
+crudini --set /home/stack/undercloud.conf DEFAULT network_cidr $NETWORK_CIDR
+crudini --set /home/stack/undercloud.conf DEFAULT network_gateway $NETWORK_GATEWAY
+crudini --set /home/stack/undercloud.conf DEFAULT inspection_iprange $INSPECTION_IP_START,$INSPECTION_IP_END
+crudini --set /home/stack/undercloud.conf DEFAULT inspection_runbench $INSPECTION_RUNBENCH_BOOL
+crudini --set /home/stack/undercloud.conf DEFAULT undercloud_debug $UNDERCLOUD_DEBUG_BOOL
+crudini --set /home/stack/undercloud.conf DEFAULT image_path /home/stack/images
+crudini --set /home/stack/undercloud.conf DEFAULT inspection_interface $INSPECTION_INTERFACE
+crudini --set /home/stack/undercloud.conf DEFAULT enable_tempest $ENABLE_TEMPEST
+crudini --set /home/stack/undercloud.conf DEFAULT enable_mistral $ENABLE_MISTRAL
+crudini --set /home/stack/undercloud.conf DEFAULT enable_zaqar $ENABLE_ZAQAR
+crudini --set /home/stack/undercloud.conf DEFAULT enable_telemetry $ENABLE_TELEMETRY
+crudini --set /home/stack/undercloud.conf DEFAULT enable_ui $ENABLE_UI
+crudini --set /home/stack/undercloud.conf DEFAULT enable_validations $ENABLE_VALIDATIONS
+crudini --set /home/stack/undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
+crudini --set /home/stack/undercloud.conf DEFAULT store_events $STORE_EVENTS
+crudini --set /home/stack/undercloud.conf DEFAULT clean_nodes $CLEAN_NODES
 
 echo "Launch the following command as user STACK!"
 echo "su - stack"
