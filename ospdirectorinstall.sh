@@ -23,9 +23,10 @@ UNDERCLOUD_PUBLIC_VIP=10.16.0.5
 # Virtual IP address to use for the admin endpoints of Undercloud
 # services. (string value)
 UNDERCLOUD_ADMIN_VIP=172.16.0.6
-# Certificate file to use for OpenStack service SSL connections.
+# Generate certificate file to use for OpenStack service SSL connections.
 # (string value)
 GENERATE_SERVICE_CERTIFICATE=false
+CERTIFICATE_GENERATION_CA=local
 #UNDERCLOUD_SERVICE_CERTIFICATE=undercloud.pem --> This is not working yet
 # Network interface on the Undercloud that will be handling the PXE
 # boots and DHCP for Overcloud instances. (string value)
@@ -167,6 +168,7 @@ crudini --set /home/stack/undercloud.conf DEFAULT local_ip $LOCAL_IP
 crudini --set /home/stack/undercloud.conf DEFAULT undercloud_public_vip  $UNDERCLOUD_PUBLIC_VIP
 crudini --set /home/stack/undercloud.conf DEFAULT undercloud_admin_vip $UNDERCLOUD_ADMIN_VIP
 crudini --set /home/stack/undercloud.conf DEFAULT generate_service_certificate $GENERATE_SERVICE_CERTIFICATE
+crudini --set /home/stack/undercloud.conf DEFAULT certificate_generation_ca $CERTIFICATE_GENERATION_CA
 crudini --set /home/stack/undercloud.conf DEFAULT local_interface $LOCAL_IFACE
 crudini --set /home/stack/undercloud.conf DEFAULT masquerade_network $MASQUERADE_NETWORK
 crudini --set /home/stack/undercloud.conf DEFAULT dhcp_start $DHCP_START
