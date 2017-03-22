@@ -90,6 +90,8 @@ STORE_EVENTS=false
 # Defines whether to wipe the hard drive of overcloud nodes between
 # deployments and after the introspection.
 CLEAN_NODES=false
+# Set admin password for undercloud
+UNDERCLOUD_ADMIN_PASSWORD=redhat
 ############################################################################
 
 
@@ -189,6 +191,7 @@ crudini --set /home/stack/undercloud.conf DEFAULT enable_validations $ENABLE_VAL
 crudini --set /home/stack/undercloud.conf DEFAULT ipxe_deploy $IPXE_DEPLOY
 crudini --set /home/stack/undercloud.conf DEFAULT store_events $STORE_EVENTS
 crudini --set /home/stack/undercloud.conf DEFAULT clean_nodes $CLEAN_NODES
+crudini --set /home/stack/undercloud.conf auth undercloud_admin_password $UNDERCLOUD_ADMIN_PASSWORD
 
 echo "Launch the following command as user STACK!"
 echo "su - stack"
